@@ -192,6 +192,11 @@ class SparkThriftServerProtocolVersionsSuite extends HiveThriftJdbcTest {
         assert(rs.next())
         assert(rs.getBigDecimal(1) === new java.math.BigDecimal("1.00"))
       }
+      testExecuteStatementWithProtocolVersion(version,
+        "SELECT cast(null as decimal) ") { rs =>
+        assert(rs.next())
+        assert(rs.getBigDecimal(1) === null)
+      }
     }
 
     test(s"$version get string type") {
@@ -261,10 +266,10 @@ class SparkThriftServerProtocolVersionsSuite extends HiveThriftJdbcTest {
       }
     }
 
-    // We do not fully support interval type
-    ignore(s"$version get interval type") {
+    test(s"$version get interval type") {
       testExecuteStatementWithProtocolVersion(version, "SELECT interval '1' year '2' day") { rs =>
         assert(rs.next())
+        assert(rs.getString(1) === "1 years 2 days")
       }
     }
 
